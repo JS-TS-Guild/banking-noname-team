@@ -43,14 +43,14 @@ class GlobalRegistry {
   }
 
   static findBankAccountByUser(userId: UserId, bankId: BankAccountId): IBankAccount | undefined {
-    const user = this.users.get(userId);
+    const user = this.getUser(userId);
     if(!user) {
       return;
     }
 
     const bankAccounts = user
       .getBankAccountIds()
-      .map(id => this.bankAccounts.get(id));
+      .map(id => this.getBankAccount(id));
     
     let bankAccount: IBankAccount | undefined;
     for(const account of bankAccounts) {
