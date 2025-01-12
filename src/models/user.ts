@@ -11,13 +11,17 @@ class User implements IUser {
   private bankAccountIds: BankAccountId[];
 
   constructor(name: string, bankAccountIds: BankAccountId[]) {
-    this.id = GlobalRegistry.nextId().toString();
+    this.id = this.generateUserId();
     this.name = name;
     this.bankAccountIds = bankAccountIds;
   }
 
   static create(name: string, bankAccountIds: BankAccountId[]) {
     return new User(name, bankAccountIds);
+  }
+
+  private generateUserId(): UserId {
+    return GlobalRegistry.nextId().toString();
   }
 
   getId(): UserId {
