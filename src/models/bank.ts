@@ -1,4 +1,4 @@
-import { BankAccountId, BankId } from "@/types/Common";
+import { Balance, BankAccountId, BankId } from "@/types/Common";
 import BankAccount, { IBankAccount } from "./bank-account";
 import GlobalRegistry from "@/services/GlobalRegistry";
 
@@ -30,7 +30,7 @@ class Bank implements IBank {
     return this.id;
   }
 
-  createAccount(balance): BankAccount {
+  createAccount(balance: Balance): BankAccount {
     const bankAccount = new BankAccount(balance);
     return bankAccount;
   }
