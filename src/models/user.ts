@@ -3,6 +3,7 @@ import { BankAccountId, UserId } from "@/types/Common";
 
 export interface IUser {
   getId(): UserId;
+  getBankAccountIds(): BankAccountId[];
 }
 
 class User implements IUser {
@@ -14,6 +15,8 @@ class User implements IUser {
     this.id = this.generateUserId();
     this.name = name;
     this.bankAccountIds = bankAccountIds;
+
+    GlobalRegistry.addUser(this);
   }
 
   static create(name: string, bankAccountIds: BankAccountId[]) {
@@ -26,6 +29,10 @@ class User implements IUser {
 
   getId(): UserId {
     return this.id;
+  }
+
+  getBankAccountIds(): BankAccountId[] {
+    return [...this.bankAccountIds];
   }
 }
 
