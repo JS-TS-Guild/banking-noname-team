@@ -11,6 +11,7 @@ class BankAccount implements IBankAccount {
   
   constructor(balance: Balance) {
     this.id = this.generateBankAccountId();
+    this.balance = balance;
   }
 
   private generateBankAccountId() {
