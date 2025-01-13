@@ -18,13 +18,15 @@ class Bank implements IBank {
   private accounts: Map<BankAccountId, BankAccount>;
   private options: BankOptions;
 
+  private static counter: number = 1;
+
   constructor(options?: BankOptions) {
     options ??= {
       isNegativeAllowed: false
     };
 
     this.options = options;
-    this.id = this.generateBankId();
+    this.id = this.generateNewId();
     this.accounts = new Map();
 
     GlobalRegistry.addBank(this);
@@ -34,8 +36,11 @@ class Bank implements IBank {
     return new Bank(options);
   }
 
-  private generateBankId() {
-    return GlobalRegistry.nextId().toString();
+  private generateNewId() {
+    const nextId = Bank.counter;
+    ++Bank.counter;
+
+    return nextId.toString();
   }
 
   getId(): BankId {

@@ -10,9 +10,11 @@ class User implements IUser {
   private id: UserId;
   private name: string;
   private bankAccountIds: BankAccountId[];
+  
+  private static counter: number = 1;
 
   constructor(name: string, bankAccountIds: BankAccountId[]) {
-    this.id = this.generateUserId();
+    this.id = this.generateNewId();
     this.name = name;
     this.bankAccountIds = bankAccountIds;
 
@@ -23,8 +25,11 @@ class User implements IUser {
     return new User(name, bankAccountIds);
   }
 
-  private generateUserId(): UserId {
-    return GlobalRegistry.nextId().toString();
+  private generateNewId() {
+    const nextId = User.counter;
+    ++User.counter;
+
+    return nextId.toString();
   }
 
   getId(): UserId {

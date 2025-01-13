@@ -13,16 +13,21 @@ class BankAccount implements IBankAccount {
   private bankId: BankId;
   private balance: Balance;
   
+  private static counter: number = 1;
+  
   constructor(bankId: BankId, balance: Balance) {
-    this.id = this.generateBankAccountId();
+    this.id = this.generateNewId();
     this.bankId = bankId;
     this.balance = balance;
 
     GlobalRegistry.addBankAccount(this);
   }
 
-  private generateBankAccountId() {
-    return GlobalRegistry.nextId().toString();
+  private generateNewId() {
+    const nextId = BankAccount.counter;
+    ++BankAccount.counter;
+
+    return nextId.toString();
   }
 
   getId(): BankAccountId {

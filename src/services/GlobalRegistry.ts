@@ -5,14 +5,11 @@ import { IUser } from "@/models/user";
 import { BankAccountId, BankId, UserId } from "@/types/Common";
 
 class GlobalRegistry {
-  static counter: number = 1;
-
   static banks: Map<BankId, IBank> = new Map();
   static bankAccounts: Map<BankAccountId, IBankAccount> = new Map();
   static users: Map<UserId, IUser> = new Map();
 
   static clear() {
-    this.counter = 1;
     this.banks = new Map();
     this.bankAccounts = new Map();
     this.users = new Map();
@@ -65,14 +62,6 @@ class GlobalRegistry {
     }
 
     return bankAccount;
-  }
-  
-
-  static nextId() {
-    const nextId = this.counter;
-    ++this.counter;
-
-    return nextId;
   }
 }
 
