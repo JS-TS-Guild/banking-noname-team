@@ -13,7 +13,7 @@ class User implements IUser {
   
   private static counter: number = 1;
 
-  constructor(name: string, bankAccountIds: BankAccountId[]) {
+  private constructor(name: string, bankAccountIds: BankAccountId[]) {
     this.id = this.generateNewId();
     this.name = name;
     this.bankAccountIds = bankAccountIds;

@@ -20,7 +20,7 @@ class Bank implements IBank {
 
   private static counter: number = 1;
 
-  constructor(options?: BankOptions) {
+  private constructor(options?: BankOptions) {
     options ??= {
       isNegativeAllowed: false
     };
@@ -52,7 +52,7 @@ class Bank implements IBank {
       throw new Error("Negative balance is not allowed by this bank.");
     }
 
-    const bankAccount = new BankAccount(this.getId(), balance);
+    const bankAccount = BankAccount.create(this.getId(), balance);
     this.accounts.set(bankAccount.getId(), bankAccount);
     return bankAccount;
   }

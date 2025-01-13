@@ -15,12 +15,16 @@ class BankAccount implements IBankAccount {
   
   private static counter: number = 1;
   
-  constructor(bankId: BankId, balance: Balance) {
+  private constructor(bankId: BankId, balance: Balance) {
     this.id = this.generateNewId();
     this.bankId = bankId;
     this.balance = balance;
 
     GlobalRegistry.addBankAccount(this);
+  }
+
+  static create(bankId: BankId, balance: Balance) {
+    return new BankAccount(bankId, balance);
   }
 
   private generateNewId() {
