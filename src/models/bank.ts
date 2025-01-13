@@ -69,6 +69,10 @@ class Bank implements IBank {
   }
 
   send(fromUserId: UserId, toUserId: UserId, amount: number, toBankId?: BankId): void {
+    if(amount <= 0) {
+      throw new Error("Invalid amount. Must be a positive number.");
+    }
+    
     const fromBankAccount = GlobalRegistry.findBankAccountByUser(fromUserId, this.getId());
     if(!fromBankAccount) {
       throw new Error("`from` account not found.");
