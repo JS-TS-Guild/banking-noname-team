@@ -10,9 +10,9 @@ class GlobalRegistry {
   static users: Map<UserId, IUser> = new Map();
 
   static clear() {
-    this.banks = new Map();
-    this.bankAccounts = new Map();
-    this.users = new Map();
+    this.banks.clear();
+    this.bankAccounts.clear();
+    this.users.clear();
   }
 
   static addBank(bank: IBank): void {
@@ -37,26 +37,6 @@ class GlobalRegistry {
 
   static getUser(id: UserId): IUser | undefined {
     return this.users.get(id);
-  }
-
-  static findBankAccountByUser(userId: UserId, bankId: BankAccountId): IBankAccount[] {
-    const user = this.getUser(userId);
-    if(!user) {
-      return;
-    }
-
-    const bankAccounts = user
-      .getBankAccountIds()
-      .map(id => this.getBankAccount(id));
-    
-    let foundBankAccounts: IBankAccount[]
-      = bankAccounts.filter(account => {
-        if(account && account.getBankId() === bankId) {
-          return true
-        }
-      });
-    
-    return foundBankAccounts;
   }
 }
 

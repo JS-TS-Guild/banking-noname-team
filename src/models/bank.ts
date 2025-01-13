@@ -68,17 +68,37 @@ class Bank implements IBank {
     return account;
   }
 
+  private findBankAccountByUser(userId: UserId, bankId: BankAccountId): IBankAccount[] {
+    const user = GlobalRegistry.getUser(userId);
+    if(!user) {
+      return;
+    }
+
+    const bankAccounts = user
+      .getBankAccountIds()
+      .map(id => GlobalRegistry.getBankAccount(id));
+    
+    let foundBankAccounts: IBankAccount[]
+      = bankAccounts.filter(account => {
+        if(account && account.getBankId() === bankId) {
+          return true
+        }
+      });
+    
+    return foundBankAccounts;
+  }
+
   send(fromUserId: UserId, toUserId: UserId, amount: number, toBankId?: BankId): void {
     if(amount <= 0) {
       throw new Error("Invalid amount. Must be a positive number.");
     }
     
-    const fromBankAccounts = GlobalRegistry.findBankAccountByUser(fromUserId, this.getId());
+    const fromBankAccounts = this.findBankAccountByUser(fromUserId, this.getId());
     if(fromBankAccounts.length === 0) {
       throw new Error("`from` account not found.");
     }
     
-    const toBankAccounts = GlobalRegistry.findBankAccountByUser(toUserId, toBankId || this.getId());
+    const toBankAccounts = this.findBankAccountByUser(toUserId, toBankId || this.getId());
     if(toBankAccounts.length === 0) {
       throw new Error("`to` account not found.");
     }
