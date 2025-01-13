@@ -68,7 +68,7 @@ class Bank implements IBank {
     return account;
   }
 
-  private findBankAccountByUser(userId: UserId, bankId: BankAccountId): IBankAccount[] {
+  private findBankAccountsByUserAndBank(userId: UserId, bankId: BankAccountId): IBankAccount[] {
     const user = GlobalRegistry.getUser(userId);
     if(!user) {
       return;
@@ -93,12 +93,12 @@ class Bank implements IBank {
       throw new Error("Invalid amount. Must be a positive number.");
     }
     
-    const fromBankAccounts = this.findBankAccountByUser(fromUserId, this.getId());
+    const fromBankAccounts = this.findBankAccountsByUserAndBank(fromUserId, this.getId());
     if(fromBankAccounts.length === 0) {
       throw new Error("`from` account not found.");
     }
     
-    const toBankAccounts = this.findBankAccountByUser(toUserId, toBankId || this.getId());
+    const toBankAccounts = this.findBankAccountsByUserAndBank(toUserId, toBankId || this.getId());
     if(toBankAccounts.length === 0) {
       throw new Error("`to` account not found.");
     }
