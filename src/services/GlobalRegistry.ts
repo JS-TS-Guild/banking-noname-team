@@ -39,7 +39,7 @@ class GlobalRegistry {
     return this.users.get(id);
   }
 
-  static findBankAccountByUser(userId: UserId, bankId: BankAccountId): IBankAccount | undefined {
+  static findBankAccountByUser(userId: UserId, bankId: BankAccountId): IBankAccount[] {
     const user = this.getUser(userId);
     if(!user) {
       return;
@@ -49,19 +49,14 @@ class GlobalRegistry {
       .getBankAccountIds()
       .map(id => this.getBankAccount(id));
     
-    let bankAccount: IBankAccount | undefined;
-    for(const account of bankAccounts) {
-      if(account && account.getBankId() === bankId) {
-        bankAccount = account;
-        break;
-      }
-    }
-
-    if(!bankAccount) {
-      return;
-    }
-
-    return bankAccount;
+    let foundBankAccounts: IBankAccount[]
+      = bankAccounts.filter(account => {
+        if(account && account.getBankId() === bankId) {
+          return true
+        }
+      });
+    
+    return foundBankAccounts;
   }
 }
 

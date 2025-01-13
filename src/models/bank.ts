@@ -73,24 +73,37 @@ class Bank implements IBank {
       throw new Error("Invalid amount. Must be a positive number.");
     }
     
-    const fromBankAccount = GlobalRegistry.findBankAccountByUser(fromUserId, this.getId());
-    if(!fromBankAccount) {
+    const fromBankAccounts = GlobalRegistry.findBankAccountByUser(fromUserId, this.getId());
+    if(fromBankAccounts.length === 0) {
       throw new Error("`from` account not found.");
     }
     
-    const toBankAccount = GlobalRegistry.findBankAccountByUser(toUserId, toBankId || this.getId());
-    if(!toBankAccount) {
+    const toBankAccounts = GlobalRegistry.findBankAccountByUser(toUserId, toBankId || this.getId());
+    if(toBankAccounts.length === 0) {
       throw new Error("`to` account not found.");
     }
 
+    let fromBankAccount: IBankAccount | undefined;
+    const toBankAccount = toBankAccounts[0];
+
     const isNegativeAllowed = this.options.isNegativeAllowed;
+    for(const account of fromBankAccounts) {
+      const updatedFromBalance = account.getBalance() - amount;
 
-    const updatedFromBalance = fromBankAccount.getBalance() - amount;
-    const updatedToBalance = toBankAccount.getBalance() + amount;
+      if(!isNegativeAllowed && updatedFromBalance < 0) {
+        continue;
+      }
 
-    if(!isNegativeAllowed && updatedFromBalance < 0) {
+      fromBankAccount = account;
+      break;
+    }
+
+    if(!fromBankAccount) {
       throw new Error("Insufficient funds");
     }
+    
+    const updatedFromBalance = fromBankAccount.getBalance() - amount;
+    const updatedToBalance = toBankAccount.getBalance() + amount;
 
     fromBankAccount.setBalance(updatedFromBalance);
     toBankAccount.setBalance(updatedToBalance);
