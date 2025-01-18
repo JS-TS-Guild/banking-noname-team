@@ -8,6 +8,8 @@ export interface IBankAccount {
   getBalance(): Balance;
   setBalance(balance: Balance): void;
 
+  canDebit(amount: number): boolean;
+
   debit(amount: number): void;
   credit(amount: number): void;
 
@@ -88,6 +90,10 @@ class BankAccount implements IBankAccount {
 
   isNegativeBalanceAllowed(): boolean {
     return this.allowNegativeBalance;
+  }
+
+  canDebit(amount: number): boolean {
+    return this.allowNegativeBalance || this.balance >= amount;
   }
 
   debit(amount: number) {

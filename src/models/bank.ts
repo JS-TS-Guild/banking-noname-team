@@ -128,41 +128,51 @@ class Bank implements IBank {
       throw new Error("`to` account not found.");
     }
 
-    let fromBankAccount: IBankAccount | undefined;
     const toBankAccount = toBankAccounts[0];
 
-    for (const account of fromBankAccounts) {
-      const updatedFromBalance = account.getBalance() - amount;
+    if (fromBankAccounts.length === 0) {
+      throw new Error(`Insufficient funds.`);
+    }
 
-      if (updatedFromBalance < 0 && !account.isNegativeBalanceAllowed()) {
-        continue;
+    let remainingAmount = amount;
+    let transferSuccessful = false;
+    const transactionLogs: Array<{
+      from: IBankAccount;
+      to: IBankAccount;
+      amount: number;
+    }> = [];
+
+    for (const fromBankAccount of fromBankAccounts) {
+      const availableBalance = fromBankAccount.getBalance();
+
+      if (fromBankAccount.canDebit(remainingAmount)) {
+        transactionLogs.push({
+          from: fromBankAccount,
+          to: toBankAccount,
+          amount: remainingAmount,
+        });
+        transferSuccessful = true;
+
+        break;
       }
 
-      fromBankAccount = account;
-      break;
+      if (fromBankAccount.canDebit(availableBalance)) {
+        transactionLogs.push({
+          from: fromBankAccount,
+          to: toBankAccount,
+          amount: remainingAmount,
+        });
+      }
     }
 
-    if (!fromBankAccount) {
-      console.log(
-        fromUser.getBankAccountIds().map((x) => {
-          console.log(GlobalRegistry.getBankAccount(x));
-        })
-      );
-
-      throw new Error(
-        `Insufficient funds. ${amount} => Accounts: ${fromBankAccounts
-          .map((x) => {
-            return `${x.getId()} => ${x.getBalance()} (isNegativeAllowed: ${x.isNegativeBalanceAllowed()})`;
-          })
-          .join("\n")}`
-      );
+    if (!transferSuccessful) {
+      throw new Error("Insufficient funds");
     }
 
-    TransactionService.transfer(
-      fromBankAccount.getId(),
-      toBankAccount.getId(),
-      amount
-    );
+    for (const log of transactionLogs) {
+      const { from, to, amount } = log;
+      TransactionService.transfer(from.getId(), to.getId(), amount);
+    }
 
     fromUser.updateAccountsList();
     toUser.updateAccountsList();
