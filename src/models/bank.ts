@@ -6,11 +6,16 @@ export interface IBank {
   getId(): BankId;
   createAccount(balance: number): IBankAccount;
   getAccount(id: BankAccountId): IBankAccount;
-  send(fromUserId: UserId, toUserId: UserId, amount: number, toBankId?: BankId): void;
+  send(
+    fromUserId: UserId,
+    toUserId: UserId,
+    amount: number,
+    toBankId?: BankId
+  ): void;
 }
 
 export type BankOptions = {
-  isNegativeAllowed?: boolean,
+  isNegativeAllowed?: boolean;
 };
 
 class Bank implements IBank {
@@ -22,7 +27,7 @@ class Bank implements IBank {
 
   private constructor(options?: BankOptions) {
     options ??= {
-      isNegativeAllowed: false
+      isNegativeAllowed: false,
     };
 
     this.options = options;
@@ -48,7 +53,7 @@ class Bank implements IBank {
   }
 
   createAccount(balance: Balance): BankAccount {
-    if(!this.options.isNegativeAllowed && balance < 0) {
+    if (!this.options.isNegativeAllowed && balance < 0) {
       throw new Error("Negative balance is not allowed by this bank.");
     }
 
@@ -58,59 +63,70 @@ class Bank implements IBank {
   }
 
   getAccount(id: BankAccountId): IBankAccount {
-    const account: BankAccount | undefined
-      = this.accounts.get(id);
+    const account: BankAccount | undefined = this.accounts.get(id);
 
-    if(!account) {
+    if (!account) {
       throw new Error("Account not found.");
     }
 
     return account;
   }
 
-  private findBankAccountsByUserAndBank(userId: UserId, bankId: BankAccountId): IBankAccount[] {
+  private findBankAccountsByUserAndBank(
+    userId: UserId,
+    bankId: BankAccountId
+  ): IBankAccount[] {
     const user = GlobalRegistry.getUser(userId);
-    if(!user) {
+    if (!user) {
       return;
     }
 
     const bankAccounts = user
       .getBankAccountIds()
-      .map(id => GlobalRegistry.getBankAccount(id));
-    
-    let foundBankAccounts: IBankAccount[]
-      = bankAccounts.filter(account => {
-        if(account && account.getBankId() === bankId) {
-          return true
-        }
-      });
-    
+      .map((id) => GlobalRegistry.getBankAccount(id));
+
+    let foundBankAccounts: IBankAccount[] = bankAccounts.filter((account) => {
+      if (account && account.getBankId() === bankId) {
+        return true;
+      }
+    });
+
     return foundBankAccounts;
   }
 
-  send(fromUserId: UserId, toUserId: UserId, amount: number, toBankId?: BankId): void {
-    if(amount <= 0) {
+  send(
+    fromUserId: UserId,
+    toUserId: UserId,
+    amount: number,
+    toBankId?: BankId
+  ): void {
+    if (amount <= 0) {
       throw new Error("Invalid amount. Must be a positive number.");
     }
-    
-    const fromBankAccounts = this.findBankAccountsByUserAndBank(fromUserId, this.getId());
-    if(fromBankAccounts.length === 0) {
+
+    const fromBankAccounts = this.findBankAccountsByUserAndBank(
+      fromUserId,
+      this.getId()
+    );
+    if (fromBankAccounts.length === 0) {
       throw new Error("`from` account not found.");
     }
-    
-    const toBankAccounts = this.findBankAccountsByUserAndBank(toUserId, toBankId || this.getId());
-    if(toBankAccounts.length === 0) {
+
+    const toBankAccounts = this.findBankAccountsByUserAndBank(
+      toUserId,
+      toBankId || this.getId()
+    );
+    if (toBankAccounts.length === 0) {
       throw new Error("`to` account not found.");
     }
 
     let fromBankAccount: IBankAccount | undefined;
     const toBankAccount = toBankAccounts[0];
 
-    const isNegativeAllowed = this.options.isNegativeAllowed;
-    for(const account of fromBankAccounts) {
+    for (const account of fromBankAccounts) {
       const updatedFromBalance = account.getBalance() - amount;
 
-      if(!isNegativeAllowed && updatedFromBalance < 0) {
+      if (updatedFromBalance < 0) {
         continue;
       }
 
@@ -118,10 +134,10 @@ class Bank implements IBank {
       break;
     }
 
-    if(!fromBankAccount) {
+    if (!fromBankAccount) {
       throw new Error("Insufficient funds");
     }
-    
+
     const updatedFromBalance = fromBankAccount.getBalance() - amount;
     const updatedToBalance = toBankAccount.getBalance() + amount;
 
