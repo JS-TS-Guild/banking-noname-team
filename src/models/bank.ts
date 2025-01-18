@@ -123,10 +123,11 @@ class Bank implements IBank {
     let fromBankAccount: IBankAccount | undefined;
     const toBankAccount = toBankAccounts[0];
 
+    const isNegativeAllowed = this.options.isNegativeAllowed;
     for (const account of fromBankAccounts) {
       const updatedFromBalance = account.getBalance() - amount;
 
-      if (updatedFromBalance < 0) {
+      if (!isNegativeAllowed && updatedFromBalance < 0) {
         continue;
       }
 
