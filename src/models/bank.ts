@@ -109,6 +109,9 @@ class Bank implements IBank {
       throw new Error("Invalid amount. Must be a positive number.");
     }
 
+    const fromUser = GlobalRegistry.getUser(fromUserId);
+    const toUser = GlobalRegistry.getUser(toUserId);
+
     const fromBankAccounts = this.findBankAccountsByUserAndBank(
       fromUserId,
       this.getId()
@@ -140,6 +143,12 @@ class Bank implements IBank {
     }
 
     if (!fromBankAccount) {
+      console.log(
+        fromUser.getBankAccountIds().map((x) => {
+          console.log(GlobalRegistry.getBankAccount(x));
+        })
+      );
+
       throw new Error(
         `Insufficient funds. ${amount} => Accounts: ${fromBankAccounts
           .map((x) => {
@@ -154,9 +163,6 @@ class Bank implements IBank {
       toBankAccount.getId(),
       amount
     );
-
-    const fromUser = GlobalRegistry.getUser(fromUserId);
-    const toUser = GlobalRegistry.getUser(toUserId);
 
     fromUser.updateAccountsList();
     toUser.updateAccountsList();
