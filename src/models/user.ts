@@ -4,6 +4,8 @@ import { IBankAccount } from "./bank-account";
 
 export interface IUser {
   getId(): UserId;
+  getName(): string;
+
   getBankAccountIds(): BankAccountId[];
   updateAccountsList(): void;
 }
@@ -40,6 +42,10 @@ class User implements IUser {
     return this.id;
   }
 
+  getName(): string {
+    return this.name;
+  }
+
   getBankAccountIds(): BankAccountId[] {
     return [...this.bankAccountIds];
   }
@@ -50,7 +56,7 @@ class User implements IUser {
         return GlobalRegistry.getBankAccount(bankAccountId);
       })
       .sort((a: IBankAccount, b: IBankAccount) => {
-        return a.getUpdatedAt().getTime() - b.getUpdatedAt().getTime();
+        return b.getUpdatedAt().getTime() - a.getUpdatedAt().getTime();
       })
       .map((account) => account.getId());
 

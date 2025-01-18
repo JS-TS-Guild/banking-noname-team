@@ -7,6 +7,9 @@ export interface IBankAccount {
   getBalance(): Balance;
   setBalance(balance: Balance): void;
 
+  debit(amount: number): void;
+  credit(amount: number): void;
+
   getCreatedAt(): Date;
   getUpdatedAt(): Date;
 }
@@ -65,6 +68,14 @@ class BankAccount implements IBankAccount {
 
   getUpdatedAt(): Date {
     return this.updatedAt;
+  }
+
+  debit(amount: number) {
+    this.balance -= amount;
+  }
+
+  credit(amount: number) {
+    this.balance += amount;
   }
 }
 

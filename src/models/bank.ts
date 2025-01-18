@@ -1,6 +1,7 @@
 import { Balance, BankAccountId, BankId, UserId } from "@/types/Common";
 import BankAccount, { IBankAccount } from "./bank-account";
 import GlobalRegistry from "@/services/GlobalRegistry";
+import TransactionService from "@/services/TransactionService";
 
 export interface IBank {
   getId(): BankId;
@@ -139,11 +140,11 @@ class Bank implements IBank {
       throw new Error("Insufficient funds");
     }
 
-    const updatedFromBalance = fromBankAccount.getBalance() - amount;
-    const updatedToBalance = toBankAccount.getBalance() + amount;
-
-    fromBankAccount.setBalance(updatedFromBalance);
-    toBankAccount.setBalance(updatedToBalance);
+    TransactionService.transfer(
+      fromBankAccount.getId(),
+      toBankAccount.getId(),
+      amount
+    );
 
     const fromUser = GlobalRegistry.getUser(fromUserId);
     const toUser = GlobalRegistry.getUser(toUserId);
