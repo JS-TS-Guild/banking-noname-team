@@ -152,6 +152,7 @@ class Bank implements IBank {
           amount: remainingAmount,
         });
         transferSuccessful = true;
+        remainingAmount = 0;
 
         break;
       }
@@ -160,8 +161,9 @@ class Bank implements IBank {
         transactionLogs.push({
           from: fromBankAccount,
           to: toBankAccount,
-          amount: remainingAmount,
+          amount: availableBalance,
         });
+        remainingAmount -= availableBalance;
       }
     }
 
