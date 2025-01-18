@@ -20,6 +20,8 @@ class User implements IUser {
     this.name = name;
     this.bankAccountIds = bankAccountIds;
 
+    this.updateAccountsList();
+
     GlobalRegistry.addUser(this);
   }
 
