@@ -128,11 +128,10 @@ class Bank implements IBank {
     let fromBankAccount: IBankAccount | undefined;
     const toBankAccount = toBankAccounts[0];
 
-    const isNegativeAllowed = this.options.isNegativeAllowed;
     for (const account of fromBankAccounts) {
       const updatedFromBalance = account.getBalance() - amount;
 
-      if (!isNegativeAllowed && updatedFromBalance < 0) {
+      if (updatedFromBalance < 0 && !account.isNegativeBalanceAllowed()) {
         continue;
       }
 
@@ -144,7 +143,7 @@ class Bank implements IBank {
       throw new Error(
         `Insufficient funds. ${amount} => Accounts: ${fromBankAccounts
           .map((x) => {
-            return `${x.getId()} => ${x.getBalance()}`;
+            return `${x.getId()} => ${x.getBalance()} (isNegativeAllowed: ${x.isNegativeBalanceAllowed()})`;
           })
           .join("\n")}`
       );
