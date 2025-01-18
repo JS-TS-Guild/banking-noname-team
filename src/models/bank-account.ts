@@ -4,6 +4,7 @@ import { BankAccountId, Balance, BankId } from "@/types/Common";
 export interface IBankAccount {
   getId(): BankAccountId;
   getBankId(): BankId;
+  isNegativeBalanceAllowed(): boolean;
   getBalance(): Balance;
   setBalance(balance: Balance): void;
 
@@ -20,22 +21,37 @@ class BankAccount implements IBankAccount {
   private balance: Balance;
   private createdAt: Date;
   private updatedAt: Date;
+  private allowNegativeBalance: boolean;
 
   private static counter: number = 1;
 
-  private constructor(bankId: BankId, balance: Balance) {
+  private constructor(
+    bankId: BankId,
+    balance: Balance,
+    allowNegativeBalance: boolean
+  ) {
     this.id = this.generateNewId();
     this.bankId = bankId;
     this.balance = balance;
+    this.allowNegativeBalance = allowNegativeBalance;
 
     this.createdAt = new Date();
     this.updatedAt = new Date(this.createdAt);
-
-    GlobalRegistry.addBankAccount(this);
   }
 
-  static create(bankId: BankId, balance: Balance) {
-    return new BankAccount(bankId, balance);
+  static create(
+    bankId: BankId,
+    balance: Balance,
+    allowNegativeBalance: boolean = false
+  ) {
+    if (balance < 0 && !allowNegativeBalance) {
+      throw new Error(
+        "Cannot create account with a negative balance, when negative balance is now allowed."
+      );
+    }
+    const account = new BankAccount(bankId, balance, allowNegativeBalance);
+    GlobalRegistry.addBankAccount(account);
+    return account;
   }
 
   private generateNewId() {
@@ -68,6 +84,10 @@ class BankAccount implements IBankAccount {
 
   getUpdatedAt(): Date {
     return this.updatedAt;
+  }
+
+  isNegativeBalanceAllowed(): boolean {
+    return this.allowNegativeBalance;
   }
 
   debit(amount: number) {

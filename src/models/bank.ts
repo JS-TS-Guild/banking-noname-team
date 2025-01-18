@@ -58,7 +58,11 @@ class Bank implements IBank {
       throw new Error("Negative balance is not allowed by this bank.");
     }
 
-    const bankAccount = BankAccount.create(this.getId(), balance);
+    const bankAccount = BankAccount.create(
+      this.getId(),
+      balance,
+      this.options.isNegativeAllowed || false
+    );
     this.accounts.set(bankAccount.getId(), bankAccount);
     return bankAccount;
   }
@@ -137,7 +141,13 @@ class Bank implements IBank {
     }
 
     if (!fromBankAccount) {
-      throw new Error("Insufficient funds");
+      throw new Error(
+        `Insufficient funds. ${amount} => Accounts: ${fromBankAccounts
+          .map((x) => {
+            return `${x.getId()} => ${x.getBalance()}`;
+          })
+          .join("\n")}`
+      );
     }
 
     TransactionService.transfer(
