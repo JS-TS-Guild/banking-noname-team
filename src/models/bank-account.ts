@@ -6,19 +6,27 @@ export interface IBankAccount {
   getBankId(): BankId;
   getBalance(): Balance;
   setBalance(balance: Balance): void;
+
+  getCreatedAt(): Date;
+  getUpdatedAt(): Date;
 }
 
 class BankAccount implements IBankAccount {
   private id: BankAccountId;
   private bankId: BankId;
   private balance: Balance;
-  
+  private createdAt: Date;
+  private updatedAt: Date;
+
   private static counter: number = 1;
-  
+
   private constructor(bankId: BankId, balance: Balance) {
     this.id = this.generateNewId();
     this.bankId = bankId;
     this.balance = balance;
+
+    this.createdAt = new Date();
+    this.updatedAt = new Date(this.createdAt);
 
     GlobalRegistry.addBankAccount(this);
   }
@@ -35,7 +43,7 @@ class BankAccount implements IBankAccount {
   }
 
   getId(): BankAccountId {
-    return this.id
+    return this.id;
   }
 
   getBankId(): BankId {
@@ -48,6 +56,15 @@ class BankAccount implements IBankAccount {
 
   setBalance(balance: Balance) {
     this.balance = balance;
+    this.updatedAt = new Date();
+  }
+
+  getCreatedAt(): Date {
+    return this.createdAt;
+  }
+
+  getUpdatedAt(): Date {
+    return this.updatedAt;
   }
 }
 

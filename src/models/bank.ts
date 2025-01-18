@@ -143,6 +143,12 @@ class Bank implements IBank {
 
     fromBankAccount.setBalance(updatedFromBalance);
     toBankAccount.setBalance(updatedToBalance);
+
+    const fromUser = GlobalRegistry.getUser(fromUserId);
+    const toUser = GlobalRegistry.getUser(toUserId);
+
+    fromUser.updateAccountsList();
+    toUser.updateAccountsList();
   }
 }
 
